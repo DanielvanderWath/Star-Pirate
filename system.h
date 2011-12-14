@@ -15,12 +15,14 @@ class System
 	private:
 		char *name;
 		list<Planet*> planetList;
+		int planetCount, planetLinkTotal;
 		bool valid;
 	public:
 		System(const char *Name, int numPlanets);
 		~System();
 		bool isValid();
 		int drawPlanets();
+		int getPlanetCount();
 };
 #endif
 

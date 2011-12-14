@@ -181,15 +181,30 @@ int graphicsInit(SDL_Window **window)
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * numVerts, verts, GL_STATIC_DRAW);
 	}
 
+	//VBO for links
+	{
+		glGenBuffers(1, &linkVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, linkVBO);
+		//not calling BufferData here because we're going to change it every frame
+	}
+
 	//default shaders
 	{
-		if(loadShaderFromFile("default.vert", &vertShader, GL_VERTEX_SHADER))
-		return 1;
-		if(loadShaderFromFile("colour.frag", &fragShader, GL_FRAGMENT_SHADER))
-		return 1;
+		if(loadShaderFromFile("default.vert", &vertShader, GL_VERTEX_SHADER)) return 1;
+		if(loadShaderFromFile("colour.frag", &fragShader, GL_FRAGMENT_SHADER)) return 1;
 		if(createProgramWith2Shaders(&colourProgram, &vertShader, &fragShader))
 		{
-			printf("Error building shaders\n");
+			printf("Error building default shaders\n");
+			exit(1);
+		}
+	}
+
+	//shaders for the lines
+	{
+		if(loadShaderFromFile("nomat.vert", &lineVertShader, GL_VERTEX_SHADER)) return 1;
+		if(createProgramWith2Shaders(&lineProgram, &lineVertShader, &fragShader))
+		{
+			printf("Error building line shaders\n");
 			exit(1);
 		}
 	}

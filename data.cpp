@@ -37,6 +37,6 @@ const int WINWIDTH=800;
 const int WINHEIGHT=600;
 
 SDL_GLContext contextGL;
-GLuint planetVBO;
-GLuint vertShader, fragShader, colourProgram;
+GLuint planetVBO, linkVBO;
+GLuint vertShader, fragShader, colourProgram, lineVertShader, lineProgram;
 

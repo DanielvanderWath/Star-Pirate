@@ -38,7 +38,7 @@ extern const int WINHEIGHT;
 
 extern SDL_GLContext contextGL;
 
-extern GLuint planetVBO;
-extern GLuint vertShader, fragShader, colourProgram;
+extern GLuint planetVBO, linkVBO;
+extern GLuint vertShader, fragShader, colourProgram, lineVertShader, lineProgram;
 #endif
 

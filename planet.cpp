@@ -14,6 +14,8 @@ Planet::Planet(unsigned int Colour, float *location)
 
 	planetColour=Colour;
 
+	linkCount=0;
+
 	for(int i=0; i<3; i++)
 		coords[i]=location[i];
 }
@@ -21,6 +23,7 @@ Planet::Planet(unsigned int Colour, float *location)
 void Planet::addLink(Planet *link)
 {
 	links.push_back(link);
+	linkCount++;
 }
 
 void Planet::printLinks()
@@ -52,4 +55,19 @@ GLfloat Planet::getY()
 GLfloat Planet::getZ()
 {
 	return coords[2];
+}
+
+int Planet::getLinkCount()
+{
+	return linkCount;
+}
+
+list<Planet*>::iterator Planet::getLinksBegin()
+{
+	return links.begin();
+}
+
+list<Planet*>::iterator Planet::getLinksEnd()
+{
+	return links.end();
 }
