@@ -24,6 +24,14 @@ int main(int argc, char **argv)
 	//init SDL/OpenGL
 	graphicsInit(&window);
 
+	//temporarily load and bind a texture
+	glActiveTexture(GL_TEXTURE0);
+	if(loadPPMIntoTexture(&planetTexture, "planet1.ppm"))
+	{
+		graphicsClean(&window);
+		return 1;
+	}
+
 	//create system(s)
 	{
 		System *temp;
@@ -46,7 +54,7 @@ int main(int argc, char **argv)
 		checkKeyboard(&loop);
 
 		//draw system
-		glClearColor(0.0f, 0.2f, 0.2f, 1.0f);
+		glClearColor(0.0f, 0.2f, 0.2f, 0.0f);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		systemList.front()->drawPlanets();

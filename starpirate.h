@@ -13,6 +13,7 @@
 int graphicsInit(SDL_Window **window);
 void graphicsClean(SDL_Window **window);
 int loadShaderFromFile(const char* filename, GLuint *shader, GLuint shaderType);
+int loadPPMIntoTexture(GLuint *texture, const char *filename);
 int createProgramWith2Shaders(GLuint *program, GLuint *vert, GLuint *frag);
 bool checkShaderCompileStatus(GLuint shader);
 int checkProgramLinkStatus(GLuint program);
@@ -39,6 +40,6 @@ extern const int WINHEIGHT;
 extern SDL_GLContext contextGL;
 
 extern GLuint planetVBO, linkVBO;
-extern GLuint vertShader, fragShader, colourProgram, lineVertShader, lineProgram;
+extern GLuint vertShader, fragShader, planetProgram, lineVertShader, lineFragShader, lineProgram, planetTexture;
 #endif
 

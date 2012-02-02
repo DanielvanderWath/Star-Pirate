@@ -11,7 +11,7 @@ mat4 matrix=mat4(0.5, 0.0, 0.0, 0.0,
 void main(void)
 {
 	gl_Position = vec4(position, 1.0) ;
-	gl_PointSize = 30.0;
+	gl_PointSize = 50.0;
 
 	fragData=data;
 }

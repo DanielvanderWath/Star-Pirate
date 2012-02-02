@@ -57,7 +57,7 @@ bool System::isValid()
 
 int System::drawPlanets()
 {
-	GLuint position, colour, matrix;
+	GLuint position, colour, matrix, texture;
 	GLfloat *planetCoords=NULL;
 	GLuint *planetCoordsIndices=NULL;
 	int planetCoordsIndex=0;
@@ -101,21 +101,25 @@ int System::drawPlanets()
 		}
 	}
 
-
-	//the VBO with the planet model
+	//the VBO for the planet coords
 	glBindBuffer(GL_ARRAY_BUFFER, planetVBO);
 	glBufferData(GL_ARRAY_BUFFER, planetCount*sizeof(GLfloat)*7, planetCoords, GL_STREAM_DRAW);
+		GLERR("glBufferData");
 
 	//the shader program to draw planets with
-	glUseProgram(colourProgram);
+	glUseProgram(planetProgram);
+
+	texture = glGetUniformLocation(planetProgram, "tex");
+	glUniform1i(texture, 0);
+		GLERR("pass in texture");
 
 	//vertex colour
-	colour = glGetAttribLocation(colourProgram, "data");
+	colour = glGetAttribLocation(planetProgram, "data");
 	glVertexAttribPointer(colour, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*7, (void*)(sizeof(GLfloat)*4));
 		GLERR("data attrib");
 
 	//vertex position
-	position = glGetAttribLocation(colourProgram, "position");
+	position = glGetAttribLocation(planetProgram, "position");
 	glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*7, 0);
 		GLERR("position attrib");
 
