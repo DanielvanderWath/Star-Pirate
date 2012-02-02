@@ -168,6 +168,9 @@ int graphicsInit(SDL_Window **window)
 	glDepthFunc(GL_LEQUAL);	
 		GLERR("glDepthFunc");
 
+	//point size is set in vertex shader
+	glEnable(GL_PROGRAM_POINT_SIZE);
+
 	//create a VBO with a triangle in it
 	{
 		GLfloat verts[]={	-0.05f, -0.05f, 0.0f,
@@ -177,14 +180,14 @@ int graphicsInit(SDL_Window **window)
 		unsigned int numVerts=9;
 
 		glGenBuffers(1, &planetVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, planetVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * numVerts, verts, GL_STATIC_DRAW);
+		//glBindBuffer(GL_ARRAY_BUFFER, planetVBO);
+		//glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * numVerts, verts, GL_STATIC_DRAW);
 	}
 
 	//VBO for links
 	{
-		glGenBuffers(1, &linkVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, linkVBO);
+		//glGenBuffers(1, &linkVBO);
+		//glBindBuffer(GL_ARRAY_BUFFER, linkVBO);
 		//not calling BufferData here because we're going to change it every frame
 	}
 

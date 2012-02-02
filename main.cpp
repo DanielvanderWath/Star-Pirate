@@ -4,6 +4,14 @@
 
 using namespace std;
 
+void checkKeyboard(bool *loop)
+{
+	SDL_PumpEvents();
+	Uint8 *key=SDL_GetKeyboardState(NULL);
+
+	if(key[SDL_SCANCODE_ESCAPE])
+		*loop=false;
+}
 
 int main(int argc, char **argv)
 {
@@ -30,17 +38,21 @@ int main(int argc, char **argv)
 
 		systemList.push_back(temp);
 	}
-	
-	//draw system
-	glClearColor(0.0f, 0.2f, 0.2f, 1.0f);
-	//while(1)
+
+	bool loop=true;
+	while(loop)
 	{
+		//keyboard input
+		checkKeyboard(&loop);
+
+		//draw system
+		glClearColor(0.0f, 0.2f, 0.2f, 1.0f);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		systemList.front()->drawPlanets();
 		SDL_GL_SwapWindow(window);
 	}
-	getchar();
-	
+
 	graphicsClean(&window);
 
 	return 0;

@@ -17,6 +17,8 @@ class System
 		list<Planet*> planetList;
 		int planetCount, planetLinkTotal;
 		bool valid;
+		float centre[3];
+		float rotation[3];
 	public:
 		System(const char *Name, int numPlanets);
 		~System();
