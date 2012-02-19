@@ -5,9 +5,9 @@ using namespace std;
 
 static int numPlanets=0;
 
-Planet::Planet(unsigned int Colour, float *location)
+Planet::Planet(unsigned int Colour, float *location, int *planetCount)
 {
-	id=numPlanets++;
+	id=(*planetCount)++;
 
 	printf("Creating planet\n\tid=%d\n\tcolour=0x%.8x\n\tcoords=%f %f %f\n", id, Colour, location[0], location[1], location[2]);
 

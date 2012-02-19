@@ -1,4 +1,5 @@
 SRC := main.cpp \
+	maths.cpp \
 	planet.cpp \
 	system.cpp \
 	data.cpp \

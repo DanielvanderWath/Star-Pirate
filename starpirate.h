@@ -19,10 +19,14 @@ bool checkShaderCompileStatus(GLuint shader);
 int checkProgramLinkStatus(GLuint program);
 bool CheckGLError(const char *string, int line, const char *file);
 void SDLErrorAndDie(const char *string, int line, const char *file);
+void multMatrices4x4(const GLfloat *A, GLfloat *B);
 
 //macros
+#define PI 3.148f
 #define GLERR(X) if(CheckGLError(X, __LINE__, __FILE__))return 1;
 #define SDLERR(X) SDLErrorAndDie(X, __LINE__, __FILE__)
+#define RADS(x) ((x*PI)/180.0f)
+#define __GetTempIdent GLfloat tempIdent[]={ 	1.0f, 0.0f, 0.0f, 0.0f,	0.0f, 1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,}
 
 extern const int colour[];
 extern const int NUM_COLOURS;
@@ -34,10 +38,14 @@ extern const char *secondName[];
 extern const int numSecondNames;
 
 extern const int MAX_SYSTEM_SIZE;
+extern const int MAX_SYSTEMS;
 extern const int WINWIDTH;
 extern const int WINHEIGHT;
 
 extern SDL_GLContext contextGL;
+
+extern GLfloat globalMatrix[16];
+extern GLfloat globalRX, globalRY;
 
 extern GLuint planetVBO, linkVBO;
 extern GLuint vertShader, fragShader, planetProgram, lineVertShader, lineFragShader, lineProgram, planetTexture;

@@ -96,7 +96,7 @@ int loadPPMIntoTexture(GLuint *texture, const char *filename)
 		texData[i*4 + 1] = buffer[i*3 + 1];
 		texData[i*4 + 2] = buffer[i*3 + 2];
 
-		if(texData[i*4 + 0] == texData[i*4 + 1] == texData[i*4 + 2] == 0)
+		if((texData[i*4 + 0] == 0) && (texData[i*4 + 1] == 0) &&  (texData[i*4 + 2] == 0))
 			texData[i*4 + 3] = 0;
 		else
 			texData[i*4 + 3] = 255;
@@ -263,8 +263,10 @@ int graphicsInit(SDL_Window **window)
 
 	//alpha testing
 	glEnable(GL_BLEND);
-	glBlendEquation(GL_MAX);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	//glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+	//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+	glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
 
 	//point size is set in vertex shader
 	glEnable(GL_PROGRAM_POINT_SIZE);

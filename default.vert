@@ -3,15 +3,12 @@ in vec3 position;
 in  vec4 data;
 out vec4 fragData;
 
-mat4 matrix=mat4(0.5, 0.0, 0.0, 0.0,
-		 0.0, 0.5, 0.0, 0.0,
-		 0.0, 0.0, 0.5, 0.0,
-		 0.0, 0.0, 0.0, 1.0);
+uniform mat4 matrix;
 
 void main(void)
 {
-	gl_Position = vec4(position, 1.0) ;
-	gl_PointSize = 50.0;
+	gl_Position = matrix * vec4(position, 1.0) ;
+	gl_PointSize = 15.0;
 
 	fragData=data;
 }

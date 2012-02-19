@@ -20,7 +20,7 @@ class System
 		float centre[3];
 		float rotation[3];
 	public:
-		System(const char *Name, int numPlanets);
+		System(const char *Name, int numPlanets, float *syscentre);
 		~System();
 		bool isValid();
 		int drawPlanets();

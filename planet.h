@@ -14,7 +14,7 @@ class Planet
 		int linkCount;
 		float coords[3];
 	public:
-		Planet(unsigned int Colour, float *location);
+		Planet(unsigned int Colour, float *location, int *planetCount);
 		void addLink(Planet *link);
 		void printLinks();
 		int getid();

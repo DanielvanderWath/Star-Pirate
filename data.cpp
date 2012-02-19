@@ -32,7 +32,15 @@ const char *secondName[]={	"Sol",
 			};
 const int numSecondNames=6;
 
+GLfloat globalMatrix[16]={	1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f,
+			};
+GLfloat globalRX=0.0f, globalRY=0.0f;
+
 const int MAX_SYSTEM_SIZE=20;
+const int MAX_SYSTEMS=10;
 const int WINWIDTH=800;
 const int WINHEIGHT=600;
 

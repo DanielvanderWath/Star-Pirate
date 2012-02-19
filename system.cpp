@@ -1,14 +1,14 @@
 #include "system.h"
 
-System::System(const char *Name, int numPlanets)
+System::System(const char *Name, int numPlanets, float *syscentre)
 {
-	planetCount=numPlanets;
+	planetCount=0;
 	planetLinkTotal=0;
 
 	for(int i=0; i<3; i++)
 	{
-		centre[i]=0;
-		rotation[i]=0;
+		centre[i]=syscentre[i];
+		rotation[i]=0.0f;
 	}
 
 	if(!Name)
@@ -27,7 +27,7 @@ System::System(const char *Name, int numPlanets)
 	for(int i=0; i< numPlanets; i++)
 	{
 		float location[]={(float)rand()/(INT_MAX/2) -1.0f, (float)rand()/(INT_MAX/2) -1.0f, (float)rand()/(INT_MAX/2) -1.0f};
-		Planet *p = new Planet(colour[rand() % NUM_COLOURS], location);
+		Planet *p = new Planet(colour[rand() % NUM_COLOURS], location, &planetCount);
 		planetList.push_back(p);
 	}
 
@@ -48,6 +48,9 @@ System::System(const char *Name, int numPlanets)
 	printf("Links:\n");
 	for(list<Planet*>::iterator it=planetList.begin(); it!=planetList.end(); it++)
 		(*it)->printLinks();
+
+	//and then the system centre here
+	printf("System centre: %f %f %f\n", centre[0], centre[1], centre[2]);
 }
 
 bool System::isValid()
@@ -62,6 +65,10 @@ int System::drawPlanets()
 	GLuint *planetCoordsIndices=NULL;
 	int planetCoordsIndex=0;
 	int planetCoordsIndicesIndex=0;
+	//rather than calculate the transformation to the system's location
+	//twice, just do it once. That's why this is declared here, rather
+	//than once before each glUniformMatrix4fv
+	GLfloat tempGlobal[16];
 
 	//coords of planets
 	planetCoords= new GLfloat[planetCount*7];
@@ -83,9 +90,9 @@ int System::drawPlanets()
 		GLfloat coords[]={(*it)->getX(),(*it)->getY(),(*it)->getZ()};
 
 		//copy planet coords to link coords array
-		planetCoords[planetCoordsIndex++]=coords[0];
-		planetCoords[planetCoordsIndex++]=coords[1];
-		planetCoords[planetCoordsIndex++]=coords[2];
+		planetCoords[planetCoordsIndex++]=coords[0]/10.0f;
+		planetCoords[planetCoordsIndex++]=coords[1]/10.0f;
+		planetCoords[planetCoordsIndex++]=coords[2]/10.0f;
 
 		//copy planet colour to link coords array
 		for(int i=3; i>=0; i--)
@@ -109,6 +116,26 @@ int System::drawPlanets()
 	//the shader program to draw planets with
 	glUseProgram(planetProgram);
 
+	{
+		matrix = glGetUniformLocation(planetProgram, "matrix");
+		//temporay identity matrix
+		__GetTempIdent;
+		//turn it into a translation to this system's centre
+		tempIdent[3]=centre[0];
+		tempIdent[7]=centre[1];
+		tempIdent[11]=centre[2];
+
+		//copy the global rotation matrix into a local one
+		memcpy(tempGlobal, globalMatrix, 16 * sizeof(GLfloat));
+
+		//multiply this system's translation by the global rotation
+		//and pass the result into the shader
+		multMatrices4x4(tempIdent, tempGlobal);
+		glUniformMatrix4fv(matrix, 1, GL_TRUE, tempGlobal);
+			GLERR("pass in matrix");
+	}
+
+	//planet texture
 	texture = glGetUniformLocation(planetProgram, "tex");
 	glUniform1i(texture, 0);
 		GLERR("pass in texture");
@@ -135,7 +162,13 @@ int System::drawPlanets()
 
 	//the shader program to draw links with
 	glUseProgram(lineProgram);
+		GLERR("Use lineProgram");
 
+	{
+		matrix = glGetUniformLocation(lineProgram, "matrix");
+		glUniformMatrix4fv(matrix, 1, GL_TRUE, tempGlobal);
+			GLERR("pass in matrix");
+	}
 	//vertex position
 	position = glGetAttribLocation(lineProgram, "position");
 	glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*7, 0);
@@ -145,15 +178,17 @@ int System::drawPlanets()
 	colour = glGetUniformLocation(lineProgram, "data");
 		GLERR("getting links ready to draw");
 
-	glUniform3f(colour, 0.0f, 1.0f, 0.0f);
+	glUniform3f(colour, 0.0f, 0.5f, 0.0f);
 
 	//draw the links
 	glDrawElements(GL_LINES, planetLinkTotal*2, GL_UNSIGNED_INT, planetCoordsIndices);
 
 	glDisableVertexAttribArray(position);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 		GLERR("Drawing lines");
+
+	delete planetCoords;
+	delete planetCoordsIndices;
 }
 
 int System::getPlanetCount()
