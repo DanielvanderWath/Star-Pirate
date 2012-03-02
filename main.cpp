@@ -5,13 +5,33 @@
 using namespace std;
 
 //pre calculate sin and cos of 5 degrees
-GLfloat s5 = sin(RADS(0.1f)), c5 = cos(RADS(0.1f));
+GLfloat rotateSpeed=0.2f;
+GLfloat s5 = sin(RADS(rotateSpeed)), c5 = cos(RADS(rotateSpeed));
 //and -5 degrees
-GLfloat sm5 = sin(RADS(-0.1f)), cm5 = cos(RADS(-0.1f));
+GLfloat sm5 = sin(RADS(-rotateSpeed)), cm5 = cos(RADS(-rotateSpeed));
 
-void checkKeyboard(bool *loop)
+void zoomToSystem(System *system)
 {
 
+	//translate to system
+	__GetTempIdent;
+	tempIdent[3]=-system->getX();///SYSTEM_SCALE;
+	tempIdent[7]=-system->getY();///SYSTEM_SCALE;
+	tempIdent[11]=-system->getZ();///SYSTEM_SCALE;
+
+	//reset global matrix
+	__LoadIdentity(globalMatrix)
+
+	multMatrices4x4(tempIdent, globalMatrix);
+
+	printf("Zooming to %s\n", system->getName());
+}
+
+void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<System*> *systems)
+{
+	static bool zooming =false;//this is a temporary measure to enforce
+				//one zoom per keypress. fix it by using the
+				//correct SDL call when you have some internet
 	SDL_PumpEvents();
 	Uint8 *key=SDL_GetKeyboardState(NULL);
 
@@ -53,11 +73,55 @@ void checkKeyboard(bool *loop)
 		tempIdent[10]=cm5;
 		multMatrices4x4(tempIdent, globalMatrix);
 	}
+	if(key[SDL_SCANCODE_R])
+	{
+		__GetTempIdent;
+		tempIdent[0]=1.005f;
+		tempIdent[5]=1.005f;
+		tempIdent[10]=1.005f;
+		multMatrices4x4(tempIdent, globalMatrix);
+	}
+	if(key[SDL_SCANCODE_F])
+	{
+		__GetTempIdent;
+		tempIdent[0]=0.995f;
+		tempIdent[5]=0.995f;
+		tempIdent[10]=0.995f;
+		multMatrices4x4(tempIdent, globalMatrix);
+		multMatrices4x4(tempIdent, globalMatrix);
+	}
+	if(key[SDL_SCANCODE_E])
+	{
+		if(!zooming)
+		{
+			(*systemCursor)++;
+			if((*systemCursor) == systems->end())
+				*systemCursor = systems->begin();
+
+			zoomToSystem((**systemCursor));
+		}zooming=true;
+	}
+	else
+		zooming=false;
+	if(key[SDL_SCANCODE_Q])
+	{
+		if(!zooming)
+		{
+			(*systemCursor)--;
+			if((*systemCursor) == systems->begin())
+				*systemCursor = systems->end();
+
+			zoomToSystem((**systemCursor));
+		}zooming=true;
+	}
+	else
+		zooming=false;
 }
 
 int main(int argc, char **argv)
 {
 	list<System*> systemList;
+	list<System*>::iterator systemCursor;
 	SDL_Window *window=NULL;
 
 	//init random seed
@@ -91,12 +155,14 @@ int main(int argc, char **argv)
 
 		systemList.push_back(temp);
 	}
+	//set systemCursor to first system in list
+	systemCursor=systemList.begin();
 
 	bool loop=true;
 	while(loop)
 	{
 		//keyboard input
-		checkKeyboard(&loop);
+		checkKeyboard(&loop, &systemCursor, &systemList);
 
 		//draw systems
 		glClearColor(0.0f, 0.2f, 0.2f, 0.0f);

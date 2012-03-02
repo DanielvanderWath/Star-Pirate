@@ -27,6 +27,7 @@ void multMatrices4x4(const GLfloat *A, GLfloat *B);
 #define SDLERR(X) SDLErrorAndDie(X, __LINE__, __FILE__)
 #define RADS(x) ((x*PI)/180.0f)
 #define __GetTempIdent GLfloat tempIdent[]={ 	1.0f, 0.0f, 0.0f, 0.0f,	0.0f, 1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,}
+#define __LoadIdentity(X) {X[0]=1.0f;X[1]=0.0f;X[2]=0.0f;X[3]=0.0f;X[4]=0.0f;X[5]=1.0f;X[6]=0.0f;X[7]=0.0f;X[8]=0.0f;X[9]=0.0f;X[10]=1.0f;X[11]=0.0f;X[12]=0.0f;X[13]=0.0f;X[14]=0.0f;X[15]=1.0f;}
 
 extern const int colour[];
 extern const int NUM_COLOURS;
@@ -41,6 +42,7 @@ extern const int MAX_SYSTEM_SIZE;
 extern const int MAX_SYSTEMS;
 extern const int WINWIDTH;
 extern const int WINHEIGHT;
+extern const float SYSTEM_SCALE;
 
 extern SDL_GLContext contextGL;
 

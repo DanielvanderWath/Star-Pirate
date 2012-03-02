@@ -90,9 +90,9 @@ int System::drawPlanets()
 		GLfloat coords[]={(*it)->getX(),(*it)->getY(),(*it)->getZ()};
 
 		//copy planet coords to link coords array
-		planetCoords[planetCoordsIndex++]=coords[0]/10.0f;
-		planetCoords[planetCoordsIndex++]=coords[1]/10.0f;
-		planetCoords[planetCoordsIndex++]=coords[2]/10.0f;
+		planetCoords[planetCoordsIndex++]=coords[0]/SYSTEM_SCALE;
+		planetCoords[planetCoordsIndex++]=coords[1]/SYSTEM_SCALE;
+		planetCoords[planetCoordsIndex++]=coords[2]/SYSTEM_SCALE;
 
 		//copy planet colour to link coords array
 		for(int i=3; i>=0; i--)
@@ -118,7 +118,7 @@ int System::drawPlanets()
 
 	{
 		matrix = glGetUniformLocation(planetProgram, "matrix");
-		//temporay identity matrix
+		//temporary identity matrix
 		__GetTempIdent;
 		//turn it into a translation to this system's centre
 		tempIdent[3]=centre[0];
@@ -196,3 +196,22 @@ int System::getPlanetCount()
 	return planetCount;
 }
 
+GLfloat System::getX()
+{
+	return centre[0];
+}
+
+GLfloat System::getY()
+{
+	return centre[1];
+}
+
+GLfloat System::getZ()
+{
+	return centre[2];
+}
+
+char* System::getName()
+{
+	return name;
+}

@@ -43,6 +43,7 @@ const int MAX_SYSTEM_SIZE=20;
 const int MAX_SYSTEMS=10;
 const int WINWIDTH=800;
 const int WINHEIGHT=600;
+const float SYSTEM_SCALE=10.0f;
 
 SDL_GLContext contextGL;
 GLuint planetVBO, linkVBO;

@@ -25,6 +25,10 @@ class System
 		bool isValid();
 		int drawPlanets();
 		int getPlanetCount();
+		GLfloat getX();
+		GLfloat getY();
+		GLfloat getZ();
+		char *getName();
 };
 #endif
 
