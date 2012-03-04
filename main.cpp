@@ -44,8 +44,6 @@ void zoomToSystem(System *system)
 
 	//set the scroll counter
 	globalScrollCount=AUTO_SCROLL_DURATION;
-
-	printf("Zooming to %s\n", system->getName());
 }
 
 bool zooming =false;//this is a temporary measure to enforce
@@ -132,7 +130,7 @@ void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<Syste
 		tempIdent[0]=1.0f+scaleSpeed;
 		tempIdent[5]=1.0f+scaleSpeed;
 		tempIdent[10]=1.0f+scaleSpeed;
-		multMatrices4x4(tempIdent, globalMatrixTarget);
+		multMatrices4x4(tempIdent, globalMatrix);
 	}
 	if(key[SDL_SCANCODE_F])
 	{
@@ -140,37 +138,39 @@ void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<Syste
 		tempIdent[0]=1.0f-scaleSpeed;
 		tempIdent[5]=1.0f-scaleSpeed;
 		tempIdent[10]=1.0f-scaleSpeed;
-		multMatrices4x4(tempIdent, globalMatrixTarget);
+		multMatrices4x4(tempIdent, globalMatrix);
 	}
-	if(key[SDL_SCANCODE_E])
-	{
-		if(!zooming)
-		{
-			(*systemCursor)++;
-			if((*systemCursor) == systems->end())
-				*systemCursor = systems->begin();
 
-			zoomToSystem((**systemCursor));
+	SDL_Event keyEvent;
+	if(SDL_PollEvent(&keyEvent))
+	{
+		switch(keyEvent.type)
+		{
+			case SDL_KEYDOWN:
+				switch(keyEvent.key.keysym.sym)
+				{
+					case SDLK_e:
+						(*systemCursor)++;
+						if((*systemCursor) == systems->end())
+							*systemCursor = systems->begin();
+
+						zoomToSystem((**systemCursor));
+						break;
+					case SDLK_q:
+						(*systemCursor)--;
+						if((*systemCursor) == systems->begin())
+							*systemCursor = systems->end();
+
+						zoomToSystem((**systemCursor));
+						break;
+					default:
+						break;
+				}
+				break;
+			default:
+				break;
 		}
-		else
-			printf("notted\n");
-		zooming=true;
 	}
-	else
-		zooming=false;
-	if(key[SDL_SCANCODE_Q])
-	{
-		if(!zooming)
-		{
-			(*systemCursor)--;
-			if((*systemCursor) == systems->begin())
-				*systemCursor = systems->end();
-
-			zoomToSystem((**systemCursor));
-		}zooming=true;
-	}
-	else
-		zooming=false;
 }
 
 int main(int argc, char **argv)
