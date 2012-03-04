@@ -27,3 +27,14 @@ void multMatrices4x4(const GLfloat *A, GLfloat *B)
 	for(int i=0; i< 16; i++)
 		B[i]=temp[i];
 }
+
+void swapMatrices4x4(GLfloat *A, GLfloat *B)
+{
+	float temp[16];
+	for (int i=0; i<16; i++)
+	{
+		temp[i]=A[i];
+		A[i]=B[i];
+		B[i]=temp[i];
+	}
+}

@@ -20,6 +20,7 @@ int checkProgramLinkStatus(GLuint program);
 bool CheckGLError(const char *string, int line, const char *file);
 void SDLErrorAndDie(const char *string, int line, const char *file);
 void multMatrices4x4(const GLfloat *A, GLfloat *B);
+void swapMatrices4x4(GLfloat *A, GLfloat *B);
 
 //macros
 #define PI 3.148f
@@ -42,12 +43,16 @@ extern const int MAX_SYSTEM_SIZE;
 extern const int MAX_SYSTEMS;
 extern const int WINWIDTH;
 extern const int WINHEIGHT;
+extern const int AUTO_SCROLL_DURATION;
 extern const float SYSTEM_SCALE;
 
 extern SDL_GLContext contextGL;
 
 extern GLfloat globalMatrix[16];
+extern GLfloat globalMatrixTarget[16];
+extern GLfloat globalMatrixSpeed[16];
 extern GLfloat globalRX, globalRY;
+extern int globalScrollCount;
 
 extern GLuint planetVBO, linkVBO;
 extern GLuint vertShader, fragShader, planetProgram, lineVertShader, lineFragShader, lineProgram, planetTexture;

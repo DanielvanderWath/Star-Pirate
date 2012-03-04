@@ -9,6 +9,18 @@ GLfloat rotateSpeed=0.2f;
 GLfloat s5 = sin(RADS(rotateSpeed)), c5 = cos(RADS(rotateSpeed));
 //and -5 degrees
 GLfloat sm5 = sin(RADS(-rotateSpeed)), cm5 = cos(RADS(-rotateSpeed));
+GLfloat scaleSpeed=0.005f, scrollSpeed=0.001f;
+
+void moveCamera()
+{
+	if(globalScrollCount > 0)
+	{
+		for(int i=0; i<16; i++)
+			globalMatrix[i]+=globalMatrixSpeed[i];
+		globalScrollCount--;
+	}
+	
+}
 
 void zoomToSystem(System *system)
 {
@@ -19,19 +31,28 @@ void zoomToSystem(System *system)
 	tempIdent[7]=-system->getY();///SYSTEM_SCALE;
 	tempIdent[11]=-system->getZ();///SYSTEM_SCALE;
 
-	//reset global matrix
-	__LoadIdentity(globalMatrix)
+	//reset global matrix speed and target
+	memset(globalMatrixSpeed, 0.0f, sizeof(GLfloat)*16);
+	__LoadIdentity(globalMatrixTarget);
 
-	multMatrices4x4(tempIdent, globalMatrix);
+	//translate the matrix target
+	multMatrices4x4(tempIdent, globalMatrixTarget);
+
+	//calculate the matrix camera's matrix speed
+	for(int i=0; i<16; i++)
+		globalMatrixSpeed[i]=(globalMatrixTarget[i] - globalMatrix[i]) / (GLfloat)AUTO_SCROLL_DURATION;
+
+	//set the scroll counter
+	globalScrollCount=AUTO_SCROLL_DURATION;
 
 	printf("Zooming to %s\n", system->getName());
 }
 
+bool zooming =false;//this is a temporary measure to enforce
+			//one zoom per keypress. fix it by using the
+			//correct SDL call when you have some internet
 void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<System*> *systems)
 {
-	static bool zooming =false;//this is a temporary measure to enforce
-				//one zoom per keypress. fix it by using the
-				//correct SDL call when you have some internet
 	SDL_PumpEvents();
 	Uint8 *key=SDL_GetKeyboardState(NULL);
 
@@ -73,22 +94,53 @@ void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<Syste
 		tempIdent[10]=cm5;
 		multMatrices4x4(tempIdent, globalMatrix);
 	}
+	if(key[SDL_SCANCODE_DOWN])
+	{
+		__GetTempIdent;
+		tempIdent[7]-=scrollSpeed;
+		swapMatrices4x4(tempIdent, globalMatrix);
+		multMatrices4x4(globalMatrix, tempIdent);
+		swapMatrices4x4(tempIdent, globalMatrix);
+	}
+	if(key[SDL_SCANCODE_UP])
+	{
+		__GetTempIdent;
+		tempIdent[7]+=scrollSpeed;
+		swapMatrices4x4(tempIdent, globalMatrix);
+		multMatrices4x4(globalMatrix, tempIdent);
+		swapMatrices4x4(tempIdent, globalMatrix);
+	}
+	if(key[SDL_SCANCODE_LEFT])
+	{
+		__GetTempIdent;
+		tempIdent[3]-=scrollSpeed;
+		swapMatrices4x4(tempIdent, globalMatrix);
+		multMatrices4x4(globalMatrix, tempIdent);
+		swapMatrices4x4(tempIdent, globalMatrix);
+	}
+	if(key[SDL_SCANCODE_RIGHT])
+	{
+		__GetTempIdent;
+		tempIdent[3]+=scrollSpeed;
+		swapMatrices4x4(tempIdent, globalMatrix);
+		multMatrices4x4(globalMatrix, tempIdent);
+		swapMatrices4x4(tempIdent, globalMatrix);
+	}
 	if(key[SDL_SCANCODE_R])
 	{
 		__GetTempIdent;
-		tempIdent[0]=1.005f;
-		tempIdent[5]=1.005f;
-		tempIdent[10]=1.005f;
-		multMatrices4x4(tempIdent, globalMatrix);
+		tempIdent[0]=1.0f+scaleSpeed;
+		tempIdent[5]=1.0f+scaleSpeed;
+		tempIdent[10]=1.0f+scaleSpeed;
+		multMatrices4x4(tempIdent, globalMatrixTarget);
 	}
 	if(key[SDL_SCANCODE_F])
 	{
 		__GetTempIdent;
-		tempIdent[0]=0.995f;
-		tempIdent[5]=0.995f;
-		tempIdent[10]=0.995f;
-		multMatrices4x4(tempIdent, globalMatrix);
-		multMatrices4x4(tempIdent, globalMatrix);
+		tempIdent[0]=1.0f-scaleSpeed;
+		tempIdent[5]=1.0f-scaleSpeed;
+		tempIdent[10]=1.0f-scaleSpeed;
+		multMatrices4x4(tempIdent, globalMatrixTarget);
 	}
 	if(key[SDL_SCANCODE_E])
 	{
@@ -99,7 +151,10 @@ void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<Syste
 				*systemCursor = systems->begin();
 
 			zoomToSystem((**systemCursor));
-		}zooming=true;
+		}
+		else
+			printf("notted\n");
+		zooming=true;
 	}
 	else
 		zooming=false;
@@ -163,6 +218,9 @@ int main(int argc, char **argv)
 	{
 		//keyboard input
 		checkKeyboard(&loop, &systemCursor, &systemList);
+
+		//move camera towards target position
+		moveCamera();
 
 		//draw systems
 		glClearColor(0.0f, 0.2f, 0.2f, 0.0f);
