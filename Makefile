@@ -2,6 +2,7 @@ SRC := main.cpp \
 	maths.cpp \
 	planet.cpp \
 	system.cpp \
+	link.cpp \
 	data.cpp \
 	errorcheck.cpp \
 	graphics.cpp \

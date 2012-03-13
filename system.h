@@ -7,6 +7,7 @@
 #include <limits.h>
 #include "starpirate.h"
 #include "planet.h"
+#include "link.h"
 
 using namespace std;
 
@@ -19,12 +20,16 @@ class System
 		bool valid;
 		float centre[3];
 		float rotation[3];
+		list<Link*> links;
+		int linkCount;
 	public:
 		System(const char *Name, int numPlanets, float *syscentre);
 		~System();
 		bool isValid();
 		int drawPlanets();
 		int getPlanetCount();
+		list<Planet*>::iterator getLinksBegin();
+		list<Planet*>::iterator getLinksEnd();
 		GLfloat getX();
 		GLfloat getY();
 		GLfloat getZ();

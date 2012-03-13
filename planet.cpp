@@ -14,22 +14,8 @@ Planet::Planet(unsigned int Colour, float *location, int *planetCount)
 
 	planetColour=Colour;
 
-	linkCount=0;
-
 	for(int i=0; i<3; i++)
 		coords[i]=location[i];
-}
-
-void Planet::addLink(Planet *link)
-{
-	links.push_back(link);
-	linkCount++;
-}
-
-void Planet::printLinks()
-{
-	for(list<Planet*>::iterator it=links.begin(); it!=links.end(); it++)
-		printf("\t%d---->%d\n", id, (*it)->getid());
 }
 
 int Planet::getid()
@@ -57,17 +43,3 @@ GLfloat Planet::getZ()
 	return coords[2];
 }
 
-int Planet::getLinkCount()
-{
-	return linkCount;
-}
-
-list<Planet*>::iterator Planet::getLinksBegin()
-{
-	return links.begin();
-}
-
-list<Planet*>::iterator Planet::getLinksEnd()
-{
-	return links.end();
-}

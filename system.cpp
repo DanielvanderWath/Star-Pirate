@@ -38,16 +38,17 @@ System::System(const char *Name, int numPlanets, float *syscentre)
 		{
 			if(jt != it && rand()%3==0)
 			{
-				(*it)->addLink((*jt));
+				//(*it)->addLink((*jt));
+				links.push_back(new Link((*it), (*jt)));
+				planetLinkTotal++;
 			}	
 		}
-		planetLinkTotal+=(*it)->getLinkCount();
 	}
 
 	//and then print the links
 	printf("Links:\n");
-	for(list<Planet*>::iterator it=planetList.begin(); it!=planetList.end(); it++)
-		(*it)->printLinks();
+	for(list<Link*>::iterator it=links.begin(); it!=links.end(); it++)
+		(*it)->print();
 
 	//and then the system centre here
 	printf("System centre: %f %f %f\n", centre[0], centre[1], centre[2]);
@@ -101,12 +102,8 @@ int System::drawPlanets()
 				uiColour >> 8;
 		}
 
-		for(list<Planet*>::iterator jt=(*it)->getLinksBegin(); jt!=(*it)->getLinksEnd(); jt++)
-		{
-			planetCoordsIndices[planetCoordsIndicesIndex++]=(*it)->getid();
-			planetCoordsIndices[planetCoordsIndicesIndex++]=(*jt)->getid();
-		}
 	}
+
 
 	//the VBO for the planet coords
 	glBindBuffer(GL_ARRAY_BUFFER, planetVBO);
@@ -159,6 +156,13 @@ int System::drawPlanets()
 	//unbind/disable the things we bound/enabled to draw the planets with
 	glDisableVertexAttribArray(position);
 	glDisableVertexAttribArray(colour);
+
+	//get the links ready
+	for(list<Link*>::iterator it=links.begin(); it!=links.end(); it++)
+	{
+		planetCoordsIndices[planetCoordsIndicesIndex++]=(*it)->getA()->getid();
+		planetCoordsIndices[planetCoordsIndicesIndex++]=(*it)->getB()->getid();
+	}
 
 	//the shader program to draw links with
 	glUseProgram(lineProgram);
