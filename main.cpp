@@ -22,18 +22,23 @@ void moveCamera()
 	
 }
 
-void zoomToSystem(System *system)
+void zoomToPoint(GLfloat x, GLfloat y, GLfloat z)
 {
 
 	//translate to system
 	__GetTempIdent;
-	tempIdent[3]=-system->getX();///SYSTEM_SCALE;
-	tempIdent[7]=-system->getY();///SYSTEM_SCALE;
-	tempIdent[11]=-system->getZ();///SYSTEM_SCALE;
+	tempIdent[3]=-x;///SYSTEM_SCALE;
+	tempIdent[7]=-y;///SYSTEM_SCALE;
+	tempIdent[11]=-z;///SYSTEM_SCALE;
 
 	//reset global matrix speed and target
 	memset(globalMatrixSpeed, 0.0f, sizeof(GLfloat)*16);
 	__LoadIdentity(globalMatrixTarget);
+
+	//put scale into target
+	globalMatrixTarget[0]=SYSTEM_SCALE;
+	globalMatrixTarget[5]=SYSTEM_SCALE;
+	globalMatrixTarget[10]=SYSTEM_SCALE;
 
 	//translate the matrix target
 	multMatrices4x4(tempIdent, globalMatrixTarget);
@@ -46,9 +51,16 @@ void zoomToSystem(System *system)
 	globalScrollCount=AUTO_SCROLL_DURATION;
 }
 
-bool zooming =false;//this is a temporary measure to enforce
-			//one zoom per keypress. fix it by using the
-			//correct SDL call when you have some internet
+void zoomToMatrix(GLfloat *matrix)
+{
+	for(int i=0; i<16; i++)
+	{
+		globalMatrixTarget[i]=matrix[i];
+		globalMatrixSpeed[i]=(matrix[i] - globalMatrix[i])/(GLfloat)AUTO_SCROLL_DURATION;
+		globalScrollCount=AUTO_SCROLL_DURATION;
+	}
+}
+
 void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<System*> *systems)
 {
 	SDL_PumpEvents();
@@ -154,14 +166,20 @@ void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<Syste
 						if((*systemCursor) == systems->end())
 							*systemCursor = systems->begin();
 
-						zoomToSystem((**systemCursor));
+						zoomToPoint((**systemCursor)->getX(),(**systemCursor)->getY(),(**systemCursor)->getZ());
 						break;
 					case SDLK_q:
 						(*systemCursor)--;
 						if((*systemCursor) == systems->begin())
 							*systemCursor = systems->end();
 
-						zoomToSystem((**systemCursor));
+						zoomToPoint((**systemCursor)->getX(),(**systemCursor)->getY(),(**systemCursor)->getZ());
+						break;
+					case SDLK_SPACE:
+						{
+							__GetTempIdent;
+							zoomToMatrix(tempIdent);
+						}
 						break;
 					default:
 						break;
