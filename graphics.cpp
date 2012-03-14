@@ -260,7 +260,7 @@ int graphicsInit(SDL_Window **window)
 		GLERR("glEnable GL_DEPTH_TEST");
 	glDepthFunc(GL_LEQUAL);	
 		GLERR("glDepthFunc");
-	//this probably doesn't do what i want it to do.#
+	//this probably doesn't do what i want it to do.
 	//i want to push the far clipping plane back a bit
 	//glDepthRange(0.0f, 10.0f);
 

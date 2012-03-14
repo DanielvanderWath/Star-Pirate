@@ -47,15 +47,17 @@ GLfloat globalMatrixSpeed[16]={	1.0f, 0.0f, 0.0f, 0.0f,
 				0.0f, 0.0f, 1.0f, 0.0f,
 				0.0f, 0.0f, 0.0f, 1.0f,
 			};
-
 GLfloat globalRX=0.0f, globalRY=0.0f;
+const GLfloat rotateSpeed=2.0f;
+
 int globalScrollCount=0;
 
+const int MAX_FRAMERATE=60;
 const int MAX_SYSTEM_SIZE=20;
 const int MAX_SYSTEMS=10;
 const int WINWIDTH=800;
 const int WINHEIGHT=600;
-const int AUTO_SCROLL_DURATION=600;
+const int AUTO_SCROLL_DURATION=60;
 const float SYSTEM_SCALE=10.0f;
 
 SDL_GLContext contextGL;

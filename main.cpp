@@ -5,11 +5,10 @@
 using namespace std;
 
 //pre calculate sin and cos of 5 degrees
-GLfloat rotateSpeed=0.2f;
 GLfloat s5 = sin(RADS(rotateSpeed)), c5 = cos(RADS(rotateSpeed));
 //and -5 degrees
 GLfloat sm5 = sin(RADS(-rotateSpeed)), cm5 = cos(RADS(-rotateSpeed));
-GLfloat scaleSpeed=0.005f, scrollSpeed=0.001f;
+GLfloat scaleSpeed=0.005f, scrollSpeed=0.01f;
 
 void moveCamera()
 {
@@ -18,13 +17,17 @@ void moveCamera()
 		for(int i=0; i<16; i++)
 			globalMatrix[i]+=globalMatrixSpeed[i];
 		globalScrollCount--;
+		if(globalScrollCount == AUTO_SCROLL_DURATION/4)
+		{
+			//calculate the zoomed in endpoint target
+			for(int i=0; i<16; i++)
+				globalMatrixSpeed[i]=(globalMatrixTarget[i] - globalMatrix[i]) / ((GLfloat)AUTO_SCROLL_DURATION*0.25f);
+		}
 	}
-	
 }
 
 void zoomToPoint(GLfloat x, GLfloat y, GLfloat z)
 {
-
 	//translate to system
 	__GetTempIdent;
 	tempIdent[3]=-x;///SYSTEM_SCALE;
@@ -35,17 +38,17 @@ void zoomToPoint(GLfloat x, GLfloat y, GLfloat z)
 	memset(globalMatrixSpeed, 0.0f, sizeof(GLfloat)*16);
 	__LoadIdentity(globalMatrixTarget);
 
-	//put scale into target
+	//calculate the halfway zoomed out target
+	for(int i=0; i<16; i++)
+		globalMatrixSpeed[i]=(globalMatrixTarget[i] - globalMatrix[i]) / ((GLfloat)AUTO_SCROLL_DURATION*0.75f);
+
+	//put scale into target, for use in the second half of the move
 	globalMatrixTarget[0]=SYSTEM_SCALE;
 	globalMatrixTarget[5]=SYSTEM_SCALE;
 	globalMatrixTarget[10]=SYSTEM_SCALE;
 
 	//translate the matrix target
 	multMatrices4x4(tempIdent, globalMatrixTarget);
-
-	//calculate the matrix camera's matrix speed
-	for(int i=0; i<16; i++)
-		globalMatrixSpeed[i]=(globalMatrixTarget[i] - globalMatrix[i]) / (GLfloat)AUTO_SCROLL_DURATION;
 
 	//set the scroll counter
 	globalScrollCount=AUTO_SCROLL_DURATION;
@@ -65,6 +68,7 @@ void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<Syste
 {
 	SDL_PumpEvents();
 	Uint8 *key=SDL_GetKeyboardState(NULL);
+	GLfloat tempCentre[3];
 
 	if(key[SDL_SCANCODE_ESCAPE])
 		*loop=false;
@@ -76,6 +80,7 @@ void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<Syste
 		tempIdent[8]=-s5;
 		tempIdent[10]=c5;
 		multMatrices4x4(tempIdent, globalMatrix);
+
 	}
 	if(key[SDL_SCANCODE_D])
 	{
@@ -169,9 +174,9 @@ void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<Syste
 						zoomToPoint((**systemCursor)->getX(),(**systemCursor)->getY(),(**systemCursor)->getZ());
 						break;
 					case SDLK_q:
-						(*systemCursor)--;
 						if((*systemCursor) == systems->begin())
 							*systemCursor = systems->end();
+						(*systemCursor)--;
 
 						zoomToPoint((**systemCursor)->getX(),(**systemCursor)->getY(),(**systemCursor)->getZ());
 						break;
@@ -196,6 +201,7 @@ int main(int argc, char **argv)
 	list<System*> systemList;
 	list<System*>::iterator systemCursor;
 	SDL_Window *window=NULL;
+	Uint32 timeStart, timeDelay;
 
 	//init random seed
 	srand(time(NULL));
@@ -234,6 +240,8 @@ int main(int argc, char **argv)
 	bool loop=true;
 	while(loop)
 	{
+		timeStart=SDL_GetTicks();
+
 		//keyboard input
 		checkKeyboard(&loop, &systemCursor, &systemList);
 
@@ -249,6 +257,10 @@ int main(int argc, char **argv)
 			(*it)->drawPlanets();
 
 		SDL_GL_SwapWindow(window);
+
+		timeDelay=(1000/MAX_FRAMERATE) - (SDL_GetTicks() - timeStart);
+		if(timeDelay < (1000/MAX_FRAMERATE))
+			SDL_Delay(timeDelay);
 	}
 
 	graphicsClean(&window);

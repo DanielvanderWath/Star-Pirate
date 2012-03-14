@@ -39,6 +39,7 @@ extern const int numFirstNames;
 extern const char *secondName[];
 extern const int numSecondNames;
 
+extern const int MAX_FRAMERATE;
 extern const int MAX_SYSTEM_SIZE;
 extern const int MAX_SYSTEMS;
 extern const int WINWIDTH;
@@ -48,8 +49,10 @@ extern const float SYSTEM_SCALE;
 
 extern SDL_GLContext contextGL;
 
+extern const GLfloat rotateSpeed;
 extern GLfloat globalMatrix[16];
 extern GLfloat globalMatrixTarget[16];
+extern GLfloat globalMatrixTargetHalfway[16];
 extern GLfloat globalMatrixSpeed[16];
 extern GLfloat globalRX, globalRY;
 extern int globalScrollCount;
