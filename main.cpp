@@ -183,6 +183,9 @@ void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<Syste
 
 						zoomToPoint((**systemCursor)->getX(),(**systemCursor)->getY(),(**systemCursor)->getZ());
 						break;
+					case SDLK_c:
+							(**systemCursor)->unOverLap();
+							break;
 					case SDLK_SPACE:
 						{
 							__GetTempIdent;

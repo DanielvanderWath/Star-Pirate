@@ -34,6 +34,7 @@ class System
 		GLfloat getY();
 		GLfloat getZ();
 		char *getName();
+		void unOverLap();
 };
 #endif
 

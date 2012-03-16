@@ -1,5 +1,27 @@
 #include "system.h"
 
+bool moveAway(Planet *A, Planet *B, float tolerance)
+{
+	//move two planets away from each other if they are closer than tolerance
+	float Ax = A->getX(), Ay = A->getY();
+	float Bx = B->getX(), By = B->getY();
+	float distance = sqrt((Ax-Bx)*(Ax-Bx) + (Ay-By)*(Ay-By));
+
+	if(distance < tolerance)
+	{
+		float push[3]={ Ax < Bx ? (Bx-Ax)/2.0f : (Ax-Bx)/2.0f, Ay < By ? (By-Ay)/2.0f : (Ay-By)/2.0f, 0.0f};
+
+		B->move(push);
+
+		push[0]=-push[0];
+		push[1]=-push[1];
+
+		A->move(push);
+		return true;
+	}
+	return false;
+}
+
 System::System(const char *Name, int numPlanets, float *syscentre)
 {
 	planetCount=0;
@@ -30,6 +52,7 @@ System::System(const char *Name, int numPlanets, float *syscentre)
 		Planet *p = new Planet(colour[rand() % NUM_COLOURS], location, &planetCount);
 		planetList.push_back(p);
 	}
+
 
 	//find the centre of the arrangement of planets, and move them all so that their centre matches the system's
 	float left=0.0f, right=0.0f, top=0.0f, bottom=0.0f;
@@ -79,6 +102,23 @@ System::System(const char *Name, int numPlanets, float *syscentre)
 */
 	//and then the system centre here
 	printf("System centre: %f %f %f\n", centre[0], centre[1], centre[2]);
+}
+
+void System::unOverLap()
+{
+	bool finished = false;
+	while(!finished)
+	//make sure none of them overlap
+	for(list<Planet*>::iterator it=planetList.begin(); it!=planetList.end(); it++)
+	{
+		//set to false if we find an overlapping pair
+		finished = true;
+		for(list<Planet*>::iterator jt=it; jt!=planetList.end(); jt++)
+			if(it!=jt)
+				if(moveAway((*it), (*jt), 0.2f))
+					finished=false;
+	}
+
 }
 
 bool System::isValid()
