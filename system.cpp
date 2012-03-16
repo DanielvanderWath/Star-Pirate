@@ -13,7 +13,7 @@ System::System(const char *Name, int numPlanets, float *syscentre)
 
 	if(!Name)
 	{
-		printf("Name cannot be NULL, dickhead\n");
+		printf("Name cannot be NULL\n");
 		valid=false;
 		return;
 	}
@@ -26,9 +26,36 @@ System::System(const char *Name, int numPlanets, float *syscentre)
 	//create the planets
 	for(int i=0; i< numPlanets; i++)
 	{
-		float location[]={(float)rand()/(INT_MAX/2) -1.0f, (float)rand()/(INT_MAX/2) -1.0f, (float)rand()/(INT_MAX/2) -1.0f};
+		float location[]={(float)rand()/(INT_MAX/2) -1.0f, (float)rand()/(INT_MAX/2) -1.0f, 0.5f};
 		Planet *p = new Planet(colour[rand() % NUM_COLOURS], location, &planetCount);
 		planetList.push_back(p);
+	}
+
+	//find the centre of the arrangement of planets, and move them all so that their centre matches the system's
+	float left=0.0f, right=0.0f, top=0.0f, bottom=0.0f;
+	for(list<Planet*>::iterator it=planetList.begin(); it!=planetList.end(); it++)
+	{
+		float x, y;
+		x=-(*it)->getX();
+		y=-(*it)->getY();
+
+		if(x<left)
+			left=x;
+		else if(x>right)
+			right=x;
+
+		if(y<bottom)
+			bottom=y;
+		else if(y>top)
+			top=y;
+	}
+	float actualcentre[3];
+	actualcentre[0]=(right+left)/2;
+	actualcentre[1]=(top+bottom)/2;
+	actualcentre[2]=0.0f;
+	for(list<Planet*>::iterator it=planetList.begin(); it!=planetList.end(); it++)
+	{
+		(*it)->move(actualcentre);
 	}
 
 	//link them, randomly for now, TODO: link them nicely
@@ -46,10 +73,10 @@ System::System(const char *Name, int numPlanets, float *syscentre)
 	}
 
 	//and then print the links
-	printf("Links:\n");
+/*	printf("Links:\n");
 	for(list<Link*>::iterator it=links.begin(); it!=links.end(); it++)
 		(*it)->print();
-
+*/
 	//and then the system centre here
 	printf("System centre: %f %f %f\n", centre[0], centre[1], centre[2]);
 }
@@ -61,7 +88,7 @@ bool System::isValid()
 
 int System::drawPlanets()
 {
-	GLuint position, colour, matrix, texture;
+	GLuint position, phase, colour, matrix, texture;
 	GLfloat *planetCoords=NULL;
 	GLuint *planetCoordsIndices=NULL;
 	int planetCoordsIndex=0;
@@ -104,6 +131,12 @@ int System::drawPlanets()
 
 	}
 
+	//get the links ready
+	for(list<Link*>::iterator it=links.begin(); it!=links.end(); it++)
+	{
+		planetCoordsIndices[planetCoordsIndicesIndex++]=(*it)->getA()->getid();
+		planetCoordsIndices[planetCoordsIndicesIndex++]=(*it)->getB()->getid();
+	}
 
 	//the VBO for the planet coords
 	glBindBuffer(GL_ARRAY_BUFFER, planetVBO);
@@ -156,13 +189,6 @@ int System::drawPlanets()
 	//unbind/disable the things we bound/enabled to draw the planets with
 	glDisableVertexAttribArray(position);
 	glDisableVertexAttribArray(colour);
-
-	//get the links ready
-	for(list<Link*>::iterator it=links.begin(); it!=links.end(); it++)
-	{
-		planetCoordsIndices[planetCoordsIndicesIndex++]=(*it)->getA()->getid();
-		planetCoordsIndices[planetCoordsIndicesIndex++]=(*it)->getB()->getid();
-	}
 
 	//the shader program to draw links with
 	glUseProgram(lineProgram);

@@ -1,8 +1,8 @@
 #version 130
-in vec4 fragData;
+uniform  vec3 data;
 out vec4 colour;
 
 void main(void)
 {
-	colour=fragData;
+	colour=vec4(data, 1.0);
 }

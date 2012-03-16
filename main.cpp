@@ -23,6 +23,8 @@ void moveCamera()
 			for(int i=0; i<16; i++)
 				globalMatrixSpeed[i]=(globalMatrixTarget[i] - globalMatrix[i]) / ((GLfloat)AUTO_SCROLL_DURATION*0.25f);
 		}
+		if( globalScrollCount == 0)
+			printf("%f %f %f\n", globalMatrix[3], globalMatrix[7], globalMatrix[11]);
 	}
 }
 
@@ -43,9 +45,9 @@ void zoomToPoint(GLfloat x, GLfloat y, GLfloat z)
 		globalMatrixSpeed[i]=(globalMatrixTarget[i] - globalMatrix[i]) / ((GLfloat)AUTO_SCROLL_DURATION*0.75f);
 
 	//put scale into target, for use in the second half of the move
-	globalMatrixTarget[0]=SYSTEM_SCALE;
-	globalMatrixTarget[5]=SYSTEM_SCALE;
-	globalMatrixTarget[10]=SYSTEM_SCALE;
+	globalMatrixTarget[0]=SYSTEM_SCALE*0.9f;
+	globalMatrixTarget[5]=SYSTEM_SCALE*0.9f;
+	globalMatrixTarget[10]=SYSTEM_SCALE*0.9f;
 
 	//translate the matrix target
 	multMatrices4x4(tempIdent, globalMatrixTarget);
@@ -172,6 +174,7 @@ void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<Syste
 							*systemCursor = systems->begin();
 
 						zoomToPoint((**systemCursor)->getX(),(**systemCursor)->getY(),(**systemCursor)->getZ());
+						printf("Zooming to system %s\n", (**systemCursor)->getName());
 						break;
 					case SDLK_q:
 						if((*systemCursor) == systems->begin())

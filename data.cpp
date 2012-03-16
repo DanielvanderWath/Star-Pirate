@@ -53,7 +53,7 @@ const GLfloat rotateSpeed=2.0f;
 int globalScrollCount=0;
 
 const int MAX_FRAMERATE=60;
-const int MAX_SYSTEM_SIZE=20;
+const int MAX_SYSTEM_SIZE=10;
 const int MAX_SYSTEMS=10;
 const int WINWIDTH=800;
 const int WINHEIGHT=600;

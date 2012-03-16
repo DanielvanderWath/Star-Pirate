@@ -43,3 +43,8 @@ GLfloat Planet::getZ()
 	return coords[2];
 }
 
+void Planet::move(float *vector)
+{
+	for(int i = 0; i<3 ; i++)
+		coords[i]+=vector[i];
+}

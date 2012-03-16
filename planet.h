@@ -18,6 +18,7 @@ class Planet
 		GLfloat getX();
 		GLfloat getY();
 		GLfloat getZ();
+		void move(float *vector);
 };
 #endif
 
