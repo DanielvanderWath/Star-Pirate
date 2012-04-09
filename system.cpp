@@ -5,10 +5,16 @@ bool moveAway(Planet *A, Planet *B, float tolerance)
 	//move two planets away from each other if they are closer than tolerance
 	float Ax = A->getX(), Ay = A->getY();
 	float Bx = B->getX(), By = B->getY();
-	float distance = sqrt((Ax-Bx)*(Ax-Bx) + (Ay-By)*(Ay-By));
+	float distance = sqrt(abs(Ax-Bx)*abs(Ax-Bx) + abs(Ay-By)*abs(Ay-By));
 
-	if(distance < tolerance)
+	if(distance == 0.0f)
 	{
+		//if they are in the same place, move A a little to the left and let the next pass sort them out. TODO: move them in random directions
+		float push[3]={ -0.1f, 0.0f, 0.0};
+	}
+	else if(distance < tolerance)
+	{
+printf("distance %f, A=%d B=%d\n", distance, A->getid(), B->getid());
 		float push[3]={ Ax < Bx ? (Bx-Ax)/2.0f : (Ax-Bx)/2.0f, Ay < By ? (By-Ay)/2.0f : (Ay-By)/2.0f, 0.0f};
 
 		B->move(push);
@@ -16,7 +22,7 @@ bool moveAway(Planet *A, Planet *B, float tolerance)
 		push[0]=-push[0];
 		push[1]=-push[1];
 
-		A->move(push);
+//		A->move(push);
 		return true;
 	}
 	return false;
@@ -26,6 +32,10 @@ System::System(const char *Name, int numPlanets, float *syscentre)
 {
 	planetCount=0;
 	planetLinkTotal=0;
+
+	static int systemCount=0;
+
+	id=systemCount++;
 
 	for(int i=0; i<3; i++)
 	{
@@ -108,17 +118,18 @@ void System::unOverLap()
 {
 	bool finished = false;
 	while(!finished)
-	//make sure none of them overlap
-	for(list<Planet*>::iterator it=planetList.begin(); it!=planetList.end(); it++)
 	{
-		//set to false if we find an overlapping pair
 		finished = true;
-		for(list<Planet*>::iterator jt=it; jt!=planetList.end(); jt++)
-			if(it!=jt)
-				if(moveAway((*it), (*jt), 0.2f))
-					finished=false;
+		//make sure none of them overlap
+		for(list<Planet*>::iterator it=planetList.begin(); it!=planetList.end(); it++)
+		{
+			//set to false if we find an overlapping pair
+			for(list<Planet*>::iterator jt=planetList.begin(); jt!=planetList.end(); jt++)
+				if((*it)->getid()!=(*jt)->getid())
+					if(moveAway((*it), (*jt), 0.2f))
+						finished=false;
+		}
 	}
-
 }
 
 bool System::isValid()
@@ -281,7 +292,18 @@ GLfloat System::getZ()
 	return centre[2];
 }
 
+void System::move(float *vector)
+{
+	for(int i=0; i<3; i++)
+		centre[i]+=vector[i];
+}
+
 char* System::getName()
 {
 	return name;
+}
+
+int System::getid()
+{
+	return id;
 }

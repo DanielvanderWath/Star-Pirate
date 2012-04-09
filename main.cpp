@@ -66,7 +66,7 @@ void zoomToMatrix(GLfloat *matrix)
 	}
 }
 
-void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<System*> *systems)
+void checkInput(bool *loop, list<System*>::iterator *systemCursor, list<System*> *systems)
 {
 	SDL_PumpEvents();
 	Uint8 *key=SDL_GetKeyboardState(NULL);
@@ -200,6 +200,41 @@ void checkKeyboard(bool *loop, list<System*>::iterator *systemCursor, list<Syste
 				break;
 		}
 	}
+
+	//mouse
+	{
+		int mouseX, mouseY;
+		if(SDL_GetMouseState(&mouseX, &mouseY) & SDL_BUTTON(1))
+			printf("Left click at %f %f\n", ((float)(mouseX * 2)/WINWIDTH) - 1.0f, 1.0f - (float)(mouseY * 2)/WINHEIGHT);
+	}
+}
+
+bool moveSystemsAway(System *A, System *B, float tolerance)
+{
+	float Ax = A->getX(), Ay = A->getY();
+	float Bx = B->getX(), By = B->getY();
+	//the distance between the two systems
+	float distance = sqrt((Ax-Bx)*(Ax-Bx) + (Ay-By)*(Ay-By));
+
+	if(distance < tolerance)
+	{
+		//move the one furthest from the origin away
+		float distanceA = sqrt(Ax*Ax + Ay*Ay), distanceB = sqrt(Ax*Ax + Ay*Ay);
+
+		float push[3]={ Ax < Bx ? (Bx-Ax) : (Ax-Bx), Ay < By ? (By-Ay) : (Ay-By), 0.0f};
+
+		if(distanceB > distanceA)
+			B->move(push);
+		else
+			A->move(push);
+
+		push[0]=-push[0];
+		push[1]=-push[1];
+
+		//A->move(push);
+		return true;
+	}
+	return false;
 }
 
 int main(int argc, char **argv)
@@ -224,7 +259,7 @@ int main(int argc, char **argv)
 	}
 
 	//create system(s)
-	int numSystems = rand() % MAX_SYSTEMS;
+	int numSystems = (rand() % (MAX_SYSTEMS-1)) +1;
 	for(int i=0; i< numSystems; i++)
 	{
 		System *temp;
@@ -238,7 +273,26 @@ int main(int argc, char **argv)
 		sprintf(name, "%s %s", firstName[nameIndices[0]], secondName[nameIndices[1]]);
 		temp = new System(name, rand()%(MAX_SYSTEM_SIZE-1) + 1, centre);//+1 cos we don't want 0
 
+		temp->unOverLap();
+
 		systemList.push_back(temp);
+	}
+
+	//unoverlap systems
+	if(0)
+	{
+		bool finished = false;
+		while(!finished)
+		{
+			finished = true;
+			for(list<System*>::iterator it=systemList.begin(); it!=systemList.end(); it++)
+			{
+				for(list<System*>::iterator jt=it; jt!=systemList.end(); jt++)
+					if((*it)->getid()!=(*jt)->getid())
+						if(moveSystemsAway((*it), (*jt), 0.2f))
+							finished = false;
+			}
+		}
 	}
 	//set systemCursor to first system in list
 	systemCursor=systemList.begin();
@@ -249,7 +303,7 @@ int main(int argc, char **argv)
 		timeStart=SDL_GetTicks();
 
 		//keyboard input
-		checkKeyboard(&loop, &systemCursor, &systemList);
+		checkInput(&loop, &systemCursor, &systemList);
 
 		//move camera towards target position
 		moveCamera();

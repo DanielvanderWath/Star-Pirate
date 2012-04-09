@@ -18,6 +18,7 @@ class System
 		list<Planet*> planetList;
 		int planetCount, planetLinkTotal;
 		bool valid;
+		int id;
 		float centre[3];
 		float rotation[3];
 		list<Link*> links;
@@ -33,6 +34,8 @@ class System
 		GLfloat getX();
 		GLfloat getY();
 		GLfloat getZ();
+		void move(float *vector);
+		int getid();
 		char *getName();
 		void unOverLap();
 };
