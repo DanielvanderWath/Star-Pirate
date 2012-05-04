@@ -16,7 +16,8 @@ class System
 	private:
 		char *name;
 		list<Planet*> planetList;
-		int planetCount, planetLinkTotal;
+		//nextPlanetId is seperate from planetCount because we don't want to end up reusing ids when planets get deleted
+		int nextPlanetId, planetCount, planetLinkTotal;
 		bool valid;
 		int id;
 		float centre[3];
@@ -38,6 +39,7 @@ class System
 		int getid();
 		char *getName();
 		void unOverLap();
+		void printDistances();
 };
 #endif
 

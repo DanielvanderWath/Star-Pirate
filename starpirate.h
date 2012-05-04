@@ -45,6 +45,7 @@ extern const int MAX_SYSTEMS;
 extern const int WINWIDTH;
 extern const int WINHEIGHT;
 extern const int AUTO_SCROLL_DURATION;
+extern const int MAX_PLANET_MOVES_BEFORE_GIVE_UP;
 extern const float SYSTEM_SCALE;
 
 extern SDL_GLContext contextGL;

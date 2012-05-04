@@ -216,6 +216,13 @@ bool moveSystemsAway(System *A, System *B, float tolerance)
 	//the distance between the two systems
 	float distance = sqrt((Ax-Bx)*(Ax-Bx) + (Ay-By)*(Ay-By));
 
+	if(distance == 0.0f)
+	{
+		//if they are in the same place, move A a little to the left and let the next pass sort them out. TODO: move them in random directions
+		float push[3]={ -0.1f, 0.0f, 0.0};
+		A->move(push);
+		return true;
+	}
 	if(distance < tolerance)
 	{
 		//move the one furthest from the origin away
@@ -275,7 +282,10 @@ int main(int argc, char **argv)
 
 		temp->unOverLap();
 
-		systemList.push_back(temp);
+		if(temp->getPlanetCount() == 0)
+			delete temp;
+		else
+			systemList.push_back(temp);
 	}
 
 	//unoverlap systems
