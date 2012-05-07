@@ -255,14 +255,15 @@ int main(int argc, char **argv)
 	srand(time(NULL));
 
 	//init SDL/OpenGL
+	printf("Initialising graphics\n");
 	graphicsInit(&window);
 
 	//temporarily load and bind a texture
-	glActiveTexture(GL_TEXTURE0);
-	if(loadPPMIntoTexture(&planetTexture, "planet1.ppm"))
+	printf("Loading Textures\n");
+	if(loadTextures())
 	{
-		graphicsClean(&window);
-		return 1;
+		printf("Failed to load textures, exiting\n");
+		exit(1);
 	}
 
 	//create system(s)
@@ -306,6 +307,12 @@ int main(int argc, char **argv)
 	}
 	//set systemCursor to first system in list
 	systemCursor=systemList.begin();
+
+	{
+		GLint num;
+		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &num);
+		printf("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS = %d\n", num);
+	}
 
 	bool loop=true;
 	while(loop)

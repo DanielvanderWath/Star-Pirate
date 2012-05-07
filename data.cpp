@@ -59,9 +59,13 @@ const int WINWIDTH=800;
 const int WINHEIGHT=600;
 const int AUTO_SCROLL_DURATION=60;
 const int MAX_PLANET_MOVES_BEFORE_GIVE_UP=10;
+const int PLANET_TYPE_EARTH=0;
+const int PLANET_TYPE_LAVA=1;
+const int PLANET_TYPE_ICE=2;
+const int NUM_PLANET_TYPES=3;
 const float SYSTEM_SCALE=10.0f;
 
 SDL_GLContext contextGL;
 GLuint planetVBO, linkVBO;
-GLuint vertShader, fragShader, planetProgram, lineVertShader, lineFragShader, lineProgram, planetTexture;
+GLuint vertShader, fragShader, planetProgram, lineVertShader, lineFragShader, lineProgram, *planetTexture, numTextures;
 

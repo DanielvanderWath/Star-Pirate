@@ -88,11 +88,10 @@ System::System(const char *Name, int numPlanets, float *syscentre)
 	for(int i=0; i< numPlanets; i++)
 	{
 		float location[]={(float)rand()/(INT_MAX/2) -1.0f, (float)rand()/(INT_MAX/2) -1.0f, 0.5f};
-		Planet *p = new Planet(colour[rand() % NUM_COLOURS], location, &nextPlanetId);
+		Planet *p = new Planet(rand() % NUM_PLANET_TYPES, location, &nextPlanetId);
 		planetCount++;
 		planetList.push_back(p);
 	}
-
 
 	//find the centre of the arrangement of planets, and move them all so that their centre matches the system's
 	float left=0.0f, right=0.0f, top=0.0f, bottom=0.0f;
@@ -180,11 +179,9 @@ void System::unOverLap()
 						if((*lit)->getA() == (*jt) || (*lit)->getB() == (*jt))
 						{
 							list<Link*>::iterator tempLit=lit;
-							printf("about to delete a link, list size now: %d\n", links.size());
 							lit=links.erase(lit);
 							delete (*tempLit);
 							planetLinkTotal--;
-							printf("deleted a link, new planetLinkTotal=%d, list size: %d\n", planetLinkTotal, links.size());
 						}
 					}
 
@@ -192,11 +189,8 @@ void System::unOverLap()
 					for(list<Planet*>::iterator kt=jt; kt != planetList.end(); kt++)
 						(*kt)->decrementCoordIndex();
 					//then get rid of this planet
-					printf("about to remove a planet\n");
 					planetList.erase(jt);
-					printf("about to delete a planet\n");
 					delete (*jt);
-					printf("no segfault, sweet\n");
 					planetCount--;
 					break;
 				}
@@ -238,20 +232,16 @@ int System::drawPlanets()
 	for(list<Planet*>::iterator it=planetList.begin(); it!=planetList.end(); it++)
 	{
 		GLfloat colourData[4];
-		GLuint uiColour=(*it)->getColour();
+		GLuint planetType=(*it)->getType();
 		GLfloat coords[]={(*it)->getX(),(*it)->getY(),(*it)->getZ()};
 
-		//copy planet coords to link coords array
+		//copy planet coords to planet coords array
 		planetCoords[planetCoordsIndex++]=coords[0]/SYSTEM_SCALE;
 		planetCoords[planetCoordsIndex++]=coords[1]/SYSTEM_SCALE;
 		planetCoords[planetCoordsIndex++]=coords[2]/SYSTEM_SCALE;
 
-		//copy planet colour to link coords array
-		for(int i=3; i>=0; i--)
-		{
-		planetCoords[planetCoordsIndex++]=(float)(((uiColour & (0xFF << (3-i)*8)) >> (3-i)*8) & 0xFF) /255.0f;
-				uiColour >> 8;
-		}
+		//copy planet type (texture) to planet coords array
+		planetCoords[planetCoordsIndex++]=(GLfloat)planetType;
 
 	}
 
@@ -264,7 +254,7 @@ int System::drawPlanets()
 
 	//the VBO for the planet coords
 	glBindBuffer(GL_ARRAY_BUFFER, planetVBO);
-	glBufferData(GL_ARRAY_BUFFER, planetCount*sizeof(GLfloat)*7, planetCoords, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, planetCount*sizeof(GLfloat)*4, planetCoords, GL_STREAM_DRAW);
 		GLERR("glBufferData");
 
 	//the shader program to draw planets with
@@ -289,19 +279,26 @@ int System::drawPlanets()
 			GLERR("pass in matrix");
 	}
 
-	//planet texture
+	//this should really go somewhere else, in fact the whole way I'm doing these textures is horrible
+	GLint planetTypesArray[]={
+				PLANET_TYPE_EARTH,
+				PLANET_TYPE_LAVA,
+				PLANET_TYPE_ICE,
+				};
+
+	//planet textures
 	texture = glGetUniformLocation(planetProgram, "tex");
-	glUniform1i(texture, 0);
+	glUniform1iv(texture, NUM_PLANET_TYPES, planetTypesArray);
 		GLERR("pass in texture");
 
 	//vertex colour
-	colour = glGetAttribLocation(planetProgram, "data");
-	glVertexAttribPointer(colour, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*7, (void*)(sizeof(GLfloat)*4));
+	colour = glGetAttribLocation(planetProgram, "texIndex");
+	glVertexAttribPointer(colour, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*4, (void*)(sizeof(GLfloat)*3));
 		GLERR("data attrib");
 
 	//vertex position
 	position = glGetAttribLocation(planetProgram, "position");
-	glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*7, 0);
+	glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*4, 0);
 		GLERR("position attrib");
 
 	//draw the planet sprites
@@ -325,7 +322,7 @@ int System::drawPlanets()
 	}
 	//vertex position
 	position = glGetAttribLocation(lineProgram, "position");
-	glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*7, 0);
+	glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*4, 0);
 	glEnableVertexAttribArray(position);
 
 	//link colour

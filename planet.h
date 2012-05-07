@@ -8,7 +8,7 @@ using namespace std;
 class Planet
 {
 	private:
-		unsigned int planetColour;
+		unsigned int planetType;
 		int id, coordIndex; //coordIndex is used to index the vertices later, it can't have gaps like the IDs can. It will be rejiggered when planets are deleted/added
 		float coords[3];
 		bool killme;
@@ -19,7 +19,7 @@ class Planet
 		int getid();
 		int getCoordIndex();
 		void decrementCoordIndex();
-		unsigned int getColour();
+		unsigned int getType();
 		GLfloat getX();
 		GLfloat getY();
 		GLfloat getZ();

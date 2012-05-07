@@ -1,10 +1,10 @@
 #version 130
-uniform sampler2D tex;
+uniform sampler2D tex[3];//TODO do this properly
 out vec4 colour;
-in vec4 fragData;
+in float ftexIndex;
 
 void main(void)
 {
-	colour=texture2D(tex, gl_PointCoord);
-	//colour = vec4(gl_PointCoord, 1.0, 1.0);
+	colour=texture2D(tex[int(ftexIndex)], gl_PointCoord);
+	//colour=texture2D(tex[0], gl_PointCoord);
 }

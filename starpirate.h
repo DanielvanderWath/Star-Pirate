@@ -13,6 +13,7 @@
 int graphicsInit(SDL_Window **window);
 void graphicsClean(SDL_Window **window);
 int loadShaderFromFile(const char* filename, GLuint *shader, GLuint shaderType);
+int loadTextures();
 int loadPPMIntoTexture(GLuint *texture, const char *filename);
 int createProgramWith2Shaders(GLuint *program, GLuint *vert, GLuint *frag);
 bool checkShaderCompileStatus(GLuint shader);
@@ -46,6 +47,10 @@ extern const int WINWIDTH;
 extern const int WINHEIGHT;
 extern const int AUTO_SCROLL_DURATION;
 extern const int MAX_PLANET_MOVES_BEFORE_GIVE_UP;
+extern const int PLANET_TYPE_EARTH;
+extern const int PLANET_TYPE_LAVA;
+extern const int PLANET_TYPE_ICE;
+extern const int NUM_PLANET_TYPES;
 extern const float SYSTEM_SCALE;
 
 extern SDL_GLContext contextGL;
@@ -59,6 +64,6 @@ extern GLfloat globalRX, globalRY;
 extern int globalScrollCount;
 
 extern GLuint planetVBO, linkVBO;
-extern GLuint vertShader, fragShader, planetProgram, lineVertShader, lineFragShader, lineProgram, planetTexture;
+extern GLuint vertShader, fragShader, planetProgram, lineVertShader, lineFragShader, lineProgram, *planetTexture, numTextures;
 #endif
 

@@ -280,7 +280,7 @@ int graphicsInit(SDL_Window **window)
 
 	//default shaders
 	{
-		if(loadShaderFromFile("default.vert", &vertShader, GL_VERTEX_SHADER)) return 1;
+		if(loadShaderFromFile("planet.vert", &vertShader, GL_VERTEX_SHADER)) return 1;
 		if(loadShaderFromFile("texture.frag", &fragShader, GL_FRAGMENT_SHADER)) return 1;
 		if(createProgramWith2Shaders(&planetProgram, &vertShader, &fragShader))
 		{
@@ -306,7 +306,7 @@ int graphicsInit(SDL_Window **window)
 void graphicsClean(SDL_Window **window)
 {
 	glDeleteBuffers(1, &planetVBO);
-	glDeleteTextures(1, &planetTexture);
+	glDeleteTextures(numTextures, planetTexture);
 
 	glDeleteShader(vertShader);
 	glDeleteShader(fragShader);
@@ -315,3 +315,36 @@ void graphicsClean(SDL_Window **window)
 	SDL_DestroyWindow(*window);
 }
 
+int loadTextures()
+{
+	list<const char*> textureFilenames;
+
+	//add textures here,
+	textureFilenames.push_back("planet3.ppm");
+	textureFilenames.push_back("planet2.ppm");
+	textureFilenames.push_back("planet1.ppm");
+	//finish adding textures
+
+	//find out how many textures there are
+	numTextures = textureFilenames.size();
+
+	//allocate some space for their handles
+	planetTexture = new GLuint[numTextures];
+	if(!planetTexture)
+	{
+		printf("Failed to allocate memory for texture handles\n");
+		return 1;
+	}
+
+	//load the textures in
+	for(int i = 0; i < numTextures; i++)
+	{
+		glActiveTexture(GL_TEXTURE0+i);
+		if(loadPPMIntoTexture(&planetTexture[i], textureFilenames.front()))
+			return 1;
+
+		textureFilenames.pop_front();
+		
+	}	
+	return 0;
+}

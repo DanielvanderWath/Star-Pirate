@@ -12,8 +12,7 @@ Planet::Planet(unsigned int Colour, float *location, int *nextPlanetId)
 
 	printf("Creating planet\n\tid=%d\n\tcolour=0x%.8x\n\tcoords=%f %f %f\n", id, Colour, location[0], location[1], location[2]);
 
-
-	planetColour=Colour;
+	planetType=Colour;
 
 	killme=false;
 	timesMoved=0;
@@ -44,9 +43,9 @@ int Planet::getid()
 	return id;
 }
 
-unsigned int Planet::getColour()
+unsigned int Planet::getType()
 {
-	return planetColour;
+	return planetType;
 }
 
 GLfloat Planet::getX()
