@@ -50,6 +50,7 @@ extern const int MAX_PLANET_MOVES_BEFORE_GIVE_UP;
 extern const int PLANET_TYPE_EARTH;
 extern const int PLANET_TYPE_LAVA;
 extern const int PLANET_TYPE_ICE;
+extern const int PLANET_TYPE_DESERT;
 extern const int NUM_PLANET_TYPES;
 extern const float SYSTEM_SCALE;
 

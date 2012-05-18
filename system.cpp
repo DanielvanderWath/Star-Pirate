@@ -284,6 +284,7 @@ int System::drawPlanets()
 				PLANET_TYPE_EARTH,
 				PLANET_TYPE_LAVA,
 				PLANET_TYPE_ICE,
+				PLANET_TYPE_DESERT,
 				};
 
 	//planet textures

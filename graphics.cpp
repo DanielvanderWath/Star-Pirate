@@ -315,35 +315,54 @@ void graphicsClean(SDL_Window **window)
 	SDL_DestroyWindow(*window);
 }
 
+struct textureLoader
+{
+	const char* filename;
+	const int textureUnit;
+};
+
 int loadTextures()
 {
-	list<const char*> textureFilenames;
+	list<textureLoader> textureLoaders;
 
 	//add textures here,
-	textureFilenames.push_back("planet3.ppm");
-	textureFilenames.push_back("planet2.ppm");
-	textureFilenames.push_back("planet1.ppm");
+	textureLoader earth = {"planetEarth.ppm", PLANET_TYPE_EARTH};//trying to go push_back({"foo", BAR}) makes the gcc give warnings
+	textureLoaders.push_back(earth);
+	textureLoader lava = {"planetLava.ppm", PLANET_TYPE_LAVA};
+	textureLoaders.push_back(lava);
+	textureLoader ice = {"planetIce.ppm", PLANET_TYPE_ICE};
+	textureLoaders.push_back(ice);
+	textureLoader desert = {"planetDesert.ppm", PLANET_TYPE_DESERT};
+	textureLoaders.push_back(desert);
 	//finish adding textures
 
-	//find out how many textures there are
-	numTextures = textureFilenames.size();
-
 	//allocate some space for their handles
-	planetTexture = new GLuint[numTextures];
+	planetTexture = new GLuint[textureLoaders.size()];
 	if(!planetTexture)
 	{
 		printf("Failed to allocate memory for texture handles\n");
 		return 1;
 	}
 
-	//load the textures in
-	for(int i = 0; i < numTextures; i++)
+	//load and delete a texture, to work around the "first texture loaded being replaced by the third one" problem
 	{
-		glActiveTexture(GL_TEXTURE0+i);
-		if(loadPPMIntoTexture(&planetTexture[i], textureFilenames.front()))
-			return 1;
+		GLuint dummyTex;
+		loadPPMIntoTexture(&dummyTex, "planetEarth.ppm");
+	}
 
-		textureFilenames.pop_front();
+	//load the textures in
+	//for(int i = 0; i < numTextures; i++)
+	while(!textureLoaders.empty())
+	{
+		glActiveTexture(GL_TEXTURE0+textureLoaders.front().textureUnit);
+			GLERR("glActiveTexture");
+		if(loadPPMIntoTexture(&planetTexture[numTextures++], textureLoaders.front().filename))
+		{
+			printf("Problem loading texture: %s\n", textureLoaders.front().filename);
+			return 1;
+		}
+
+		textureLoaders.pop_front();
 		
 	}	
 	return 0;
