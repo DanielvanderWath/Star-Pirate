@@ -13,6 +13,10 @@ class Planet
 		float coords[3];
 		bool killme;
 		int timesMoved;
+		unsigned int resource_metal;
+		unsigned int resource_crystal;
+		unsigned int resource_food;
+		unsigned int resource_silicon;
 	public:
 		Planet(unsigned int Colour, float *location, int *nextPlanetId);
 		~Planet();
@@ -28,6 +32,8 @@ class Planet
 		void print();
 		void markForDestruction();
 		bool getKillMe();
+		void initResources();
+		void printResources();
 };
 #endif
 

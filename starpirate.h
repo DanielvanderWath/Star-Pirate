@@ -47,10 +47,17 @@ extern const int WINWIDTH;
 extern const int WINHEIGHT;
 extern const int AUTO_SCROLL_DURATION;
 extern const int MAX_PLANET_MOVES_BEFORE_GIVE_UP;
+#if 0
 extern const int PLANET_TYPE_EARTH;
 extern const int PLANET_TYPE_LAVA;
 extern const int PLANET_TYPE_ICE;
 extern const int PLANET_TYPE_DESERT;
+#else
+#define PLANET_TYPE_EARTH 0
+#define PLANET_TYPE_LAVA 1
+#define PLANET_TYPE_ICE 2
+#define PLANET_TYPE_DESERT 3
+#endif
 extern const int NUM_PLANET_TYPES;
 extern const float SYSTEM_SCALE;
 

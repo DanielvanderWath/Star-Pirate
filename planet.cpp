@@ -14,6 +14,9 @@ Planet::Planet(unsigned int Colour, float *location, int *nextPlanetId)
 
 	planetType=Colour;
 
+	initResources();
+	printResources();
+
 	killme=false;
 	timesMoved=0;
 
@@ -24,6 +27,53 @@ Planet::Planet(unsigned int Colour, float *location, int *nextPlanetId)
 Planet::~Planet()
 {
 	printf("deleting planet\n");
+}
+
+void Planet::printResources()
+{
+	printf("Resources:\n");
+	if(resource_food != 0)
+		printf("\tFood: %d\n", resource_food);
+	if(resource_crystal != 0)
+		printf("\tCrystal: %d\n", resource_crystal);
+	if(resource_metal != 0)
+		printf("\tMetal: %d\n", resource_metal);
+	if(resource_silicon != 0)
+		printf("\tSilicon: %d\n", resource_silicon);
+}
+
+void Planet::initResources()
+{
+	switch(planetType)
+	{
+		case PLANET_TYPE_EARTH:
+			resource_food = (rand() % 800) + 200;
+			resource_crystal = 0;
+			resource_metal = 0;
+			resource_silicon = 0;
+			break;
+		case PLANET_TYPE_LAVA:
+			resource_food = 0;
+			resource_crystal = 0;
+			resource_metal = (rand() % 800) + 200;
+			resource_silicon = 0;
+			break;
+		case PLANET_TYPE_ICE:
+			resource_food = 0;
+			resource_crystal = (rand() % 800) + 200;
+			resource_metal = 0;
+			resource_silicon = 0;
+			break;
+		case PLANET_TYPE_DESERT:
+			resource_food = 0;
+			resource_crystal = 0;
+			resource_metal = 0;
+			resource_silicon = (rand() % 800) + 200;
+			break;
+		default:
+			printf("ERROR: Invalid planet type\n");
+		
+	}
 }
 
 int Planet::getCoordIndex()
